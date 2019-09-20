@@ -26,6 +26,41 @@ import (
 } */
 
 func main() {
+	db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/test")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+	
+	// Open the file
+	csvfile, err := os.Open("input.csv")
+	
+	// Parse the file
+	r := csv.NewReader(csvfile)
+	r.Read()
+	
+	// Iterate through the records
+	for {
+		// Read each record from csv
+		record, err := r.Read()
+		// fmt.Println(record[1])
+
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		insert, err := db.Query("INSERT INTO persons(first_name, last_name, age, blood_group) VALUES('" + record[0] + "','" + record[1] + "','" + record[2] + "','" + record[3] + "')")
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+		defer insert.Close()
+		fmt.Println("Successfully inserted a data row")
+	}
 	// Establishing DB connection
 	/* db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/test")
 
@@ -69,11 +104,7 @@ func main() {
 	// defer results.Close()
 
 	// fmt.Println("Successfully inserted a data row")
-	db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/test")
-	if err != nil {
-		panic(err.Error())
-	}
-	defer db.Close()
+	
 
 	/* mysql.RegisterReaderHandler("data", func() io.Reader {
 		var csvReader io.Reader // Some Reader that returns CSV data
@@ -99,8 +130,7 @@ func main() {
 	fmt.Println(xyz)
 	fmt.Println(db.Exec("LOAD DATA LOCAL INFILE '" + filePath + "' INTO TABLE users")) */
 
-	// Open the file
-	csvfile, err := os.Open("input.csv")
+	
 	/* fileScanner := bufio.NewScanner(csvfile)
 	lineCount := 0
 	for fileScanner.Scan() {
@@ -110,42 +140,8 @@ func main() {
 		log.Fatalln("Couldn't open the csv file", err)
 	} */
 
-	// Parse the file
-	r := csv.NewReader(csvfile)
-	r.Read()
+	
 	//r := csv.NewReader(bufio.NewReader(csvfile))
 	// var colIndex []int
-	// Iterate through the records
-	for {
-		// Read each record from csv
-		record, err := r.Read()
-		// fmt.Println(record[1])
-
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// if err != nil {
-		// 	panic(err.Error())
-		// }
-		// fmt.Println(len(record))
-		// for i := 0; i < len(record); i++ {
-		insert, err := db.Query("INSERT INTO persons(first_name, last_name, age, blood_group) VALUES('" + record[0] + "','" + record[1] + "','" + record[2] + "','" + record[3] + "')")
-
-		if err != nil {
-			panic(err.Error())
-		}
-
-		defer insert.Close()
-		fmt.Println("Successfully inserted a data row")
-		// }
-
-		// fmt.Println(record[i])
-		// fmt.Println(record)
-
-		// fmt.Printf("%s %s\n", record[0], record[1])
-	}
+	
 }
