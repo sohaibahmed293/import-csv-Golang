@@ -33,7 +33,7 @@ func main() {
 	defer db.Close()
 	
 	// Open the file
-	csvfile, err := os.Open("input.csv")
+	csvfile, err := os.Open("csv-file.csv")
 	
 	// Parse the file
 	r := csv.NewReader(csvfile)
